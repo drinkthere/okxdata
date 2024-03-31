@@ -1,0 +1,13 @@
+{
+    "LogLevel" : "INFO",
+    "LogPath": "./logs/okxdata.log",
+
+    "OkxAPIKey": "",
+    "OkxSecretKey": "",
+    "OkxPassword": "",
+
+
+    "InstIDs": ["BTC-USDT-SWAP", "ETH-USDT-SWAP", "MATIC-USDT-SWAP"],
+    "KeepPricesMs": 100000,
+    "MinAccuracy": 0.000001
+}
