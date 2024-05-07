@@ -7,7 +7,7 @@
     "OkxPassword": "",
 
 
-    "InstIDs": ["BTC-USDT-SWAP", "ETH-USDT-SWAP", "MATIC-USDT-SWAP"],
+    "InstIDs": ["BTC-USDT-SWAP", "ETH-USDT-SWAP"],
     "KeepPricesMs": 100000,
     "MinAccuracy": 0.000001
 }
