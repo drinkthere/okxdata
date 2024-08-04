@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	binanceFutures "github.com/dictxwang/go-binance/futures"
 	"github.com/drinkthere/okx/events/public"
 	"okxdata/client"
 	"okxdata/config"
@@ -23,6 +24,11 @@ func startWebSocket() {
 
 	// 开启Okx行情数据收集整理
 	message.StartGatherOkxFuturesTicker(okxFuturesTickerChan, &globalConfig, &globalContext)
+
+	// 监听binance行情信息并收集整理
+	binanceFuturesTickerChan := make(chan *binanceFutures.WsBookTickerEvent)
+	message.StartBinanceMarketWs(&globalConfig, &globalContext, binanceFuturesTickerChan)
+	message.StartGatherBinanceFuturesBookTicker(binanceFuturesTickerChan, &globalConfig, &globalContext)
 }
 
 func main() {
@@ -51,7 +57,7 @@ func main() {
 	time.Sleep(10 * time.Second)
 
 	// 启动HTTP 服务
-	startHTTPServer()
+	startHTTPServer(&globalConfig)
 
 	// 阻塞主进程
 	for {

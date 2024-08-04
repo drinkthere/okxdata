@@ -4,17 +4,20 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"okxdata/config"
+	"okxdata/container"
 	"okxdata/utils/logger"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func startHTTPServer() {
+func startHTTPServer(cfg *config.Config) {
 	go func() {
 		http.HandleFunc("/api/v1/getInstrumentPriceList", getInstPriceListHandler())
-		logger.Info("Server listening on :8888")
-		err := http.ListenAndServe(":8888", nil)
+		logger.Info("Server listening on %s", cfg.Port)
+		port := strconv.Itoa(cfg.Port)
+		err := http.ListenAndServe(":"+port, nil)
 		if err != nil {
 			log.Fatal("ListenAndServe: ", err)
 		}
@@ -23,6 +26,12 @@ func startHTTPServer() {
 
 func getInstPriceListHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		exchange := r.URL.Query().Get("exchange")
+		if exchange == "" {
+			exchange = "OKX"
+		}
+		exchange = strings.ToUpper(exchange)
+
 		instID := r.URL.Query().Get("instID")
 		instID = strings.ToUpper(instID)
 
@@ -33,8 +42,15 @@ func getInstPriceListHandler() http.HandlerFunc {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
+		logger.Info("exchange=%s, instID=%s, timePeriodMs=%d", exchange, instID, timePeriodMs)
 
-		priceList := globalContext.PriceComposite.GetPriceList(instID)
+		var priceList *[]container.PriceItem
+		if exchange == "OKX" {
+			priceList = globalContext.OkxPriceComposite.GetPriceList(instID)
+		} else {
+			priceList = globalContext.BinancePriceComposite.GetPriceList(instID)
+		}
+
 		if priceList == nil {
 			w.WriteHeader(http.StatusNotFound)
 			logger.Info("[Main] Can Not Find %s's Price List", instID)

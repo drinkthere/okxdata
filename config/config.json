@@ -6,6 +6,10 @@
     "OkxSecretKey": "",
     "OkxPassword": "",
 
+    "BinanceAPIKey": "",
+    "BinanceSecretKey": "",
+
+    "Port": 8080,
 
     "InstIDs": ["BTC-USDT-SWAP", "ETH-USDT-SWAP"],
     "KeepPricesMs": 100000,

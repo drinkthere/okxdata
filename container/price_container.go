@@ -2,6 +2,7 @@ package container
 
 import (
 	"okxdata/config"
+	"okxdata/utils"
 	"okxdata/utils/logger"
 	"sort"
 	"sync"
@@ -18,11 +19,22 @@ type PriceComposite struct {
 	rwLock             *sync.RWMutex
 }
 
-func (c *PriceComposite) Init(globalConfig *config.Config) {
+func (c *PriceComposite) InitOkx(globalConfig *config.Config) {
 	c.instIDPriceListMap = map[string][]PriceItem{}
 	for _, instID := range globalConfig.InstIDs {
 		// 初始化，无需加锁
 		c.instIDPriceListMap[instID] = []PriceItem{}
+
+	}
+	c.rwLock = new(sync.RWMutex)
+}
+
+func (c *PriceComposite) InitBinance(globalConfig *config.Config) {
+	c.instIDPriceListMap = map[string][]PriceItem{}
+	for _, instID := range globalConfig.InstIDs {
+		// 初始化，无需加锁
+		binanceInstID := utils.ConvertToBinanceInstID(instID)
+		c.instIDPriceListMap[binanceInstID] = []PriceItem{}
 
 	}
 	c.rwLock = new(sync.RWMutex)

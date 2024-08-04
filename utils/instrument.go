@@ -2,6 +2,7 @@ package utils
 
 import (
 	"okxdata/config"
+	"strings"
 )
 
 func ConvertToStdInstType(exchange config.Exchange, instType string) config.InstrumentType {
@@ -14,4 +15,9 @@ func ConvertToStdInstType(exchange config.Exchange, instType string) config.Inst
 		}
 	}
 	return config.UnknownInstrument
+}
+
+func ConvertToBinanceInstID(okxFuturesInstID string) string {
+	// BTC-USDT-SWAP => BTCUSDT
+	return strings.Replace(okxFuturesInstID, "-USDT-SWAP", "USDT", -1)
 }

@@ -17,6 +17,8 @@ type Config struct {
 	OkxSecretKey string
 	OkxPassword  string
 
+	Port int
+
 	InstIDs      []string
 	KeepPricesMs int64
 	MinAccuracy  float64 // 价格最小精度

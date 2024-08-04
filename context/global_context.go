@@ -8,21 +8,18 @@ import (
 )
 
 type GlobalContext struct {
-	InstrumentComposite       container.InstrumentComposite
-	OkxFuturesTickerComposite container.TickerComposite
-	PriceComposite            container.PriceComposite
-	rwLock                    sync.RWMutex
+	InstrumentComposite   container.InstrumentComposite
+	OkxPriceComposite     container.PriceComposite
+	BinancePriceComposite container.PriceComposite
+	rwLock                sync.RWMutex
 }
 
 func (context *GlobalContext) Init(globalConfig *config.Config, globalOkxClient *client.OkxClient) {
 	// 初始化交易对数据
 	context.initInstrumentComposite(globalConfig)
 
-	// 初始化ticker数据
-	context.initTickerComposite()
-
 	// 初始化volatility数据
-	context.initPirceComposite(globalConfig)
+	context.initPriceComposite(globalConfig)
 
 	context.rwLock = sync.RWMutex{}
 }
@@ -33,14 +30,12 @@ func (context *GlobalContext) initInstrumentComposite(globalConfig *config.Confi
 	context.InstrumentComposite = instrumentComposite
 }
 
-func (context *GlobalContext) initTickerComposite() {
-	okxFuturesComposite := container.TickerComposite{}
-	okxFuturesComposite.Init(config.OkxExchange, config.FuturesInstrument)
-	context.OkxFuturesTickerComposite = okxFuturesComposite
-}
+func (context *GlobalContext) initPriceComposite(globalConfig *config.Config) {
+	okxPriceComposite := container.PriceComposite{}
+	okxPriceComposite.InitOkx(globalConfig)
+	context.OkxPriceComposite = okxPriceComposite
 
-func (context *GlobalContext) initPirceComposite(globalConfig *config.Config) {
-	priceComposite := container.PriceComposite{}
-	priceComposite.Init(globalConfig)
-	context.PriceComposite = priceComposite
+	binancePriceComposite := container.PriceComposite{}
+	binancePriceComposite.InitBinance(globalConfig)
+	context.BinancePriceComposite = binancePriceComposite
 }

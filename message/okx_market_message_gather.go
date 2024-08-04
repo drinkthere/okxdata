@@ -32,7 +32,7 @@ func StartGatherOkxFuturesTicker(tickChan chan *public.Tickers, globalConfig *co
 			s := <-tickChan
 			for _, t := range s.Tickers {
 				tickerMsg := convertToOkxTickerMessage(t)
-				globalContext.PriceComposite.UpdatePriceList(tickerMsg, globalConfig)
+				globalContext.OkxPriceComposite.UpdatePriceList(tickerMsg, globalConfig)
 			}
 			if r.Int31n(10000) < 5 && len(s.Tickers) > 0 {
 				logger.Info("[Gather] Receive Okx Futures Ticker %+v", s.Tickers[0])
