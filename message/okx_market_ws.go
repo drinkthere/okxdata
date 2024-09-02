@@ -15,7 +15,7 @@ func StartOkxMarketWs(cfg *config.Config, globalContext *context.GlobalContext,
 	okxFuturesTickerChan chan *public.Tickers) {
 
 	startOkxFuturesTickers(cfg, globalContext, okxFuturesTickerChan)
-	logger.Info("[WebSocket] Start Listen Futures Tickers")
+	logger.Info("[WebSocket] Start Listen Okx Futures Tickers")
 }
 
 func startOkxFuturesTickers(cfg *config.Config, globalContext *context.GlobalContext, tickerChan chan *public.Tickers) {
@@ -33,7 +33,7 @@ func startOkxFuturesTickers(cfg *config.Config, globalContext *context.GlobalCon
 			okxClient.Init(cfg)
 
 			okxClient.Client.Ws.SetChannels(errChan, subChan, uSubChan, loginCh, successCh)
-			for _, instID := range globalContext.InstrumentComposite.InstIDs {
+			for _, instID := range globalContext.InstrumentComposite.OkxSwapInstIDs {
 				err := okxClient.Client.Ws.Public.Tickers(wsRequestPublic.Tickers{
 					InstID: instID,
 				}, tickerChan)

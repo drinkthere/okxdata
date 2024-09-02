@@ -5,8 +5,8 @@ github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869/go.mod h1:Ekp36dR
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/dictxwang/go-binance v0.1.2 h1:YTUfcec75locCRYwNpp1hshyIWsaaMlB1bmtZvYfo1U=
-github.com/dictxwang/go-binance v0.1.2/go.mod h1:nTH9jILAgrPqXrjQAYelOVk93zLG8A5troSiG0JbTmo=
+github.com/dictxwang/go-binance v0.1.20 h1:3kn6Q603aoCCwHfH0rgvw5JmsH0xre/4Bf5dWkk+uQk=
+github.com/dictxwang/go-binance v0.1.20/go.mod h1:nTH9jILAgrPqXrjQAYelOVk93zLG8A5troSiG0JbTmo=
 github.com/drinkthere/okx v1.0.20 h1:yyWqUkvSLTOSJ8GvSxXSJ8OcdiUeUrTA6ePvtaP8NRY=
 github.com/drinkthere/okx v1.0.20/go.mod h1:W6kGifne6ioS505dnFLWnYfY8lwfhv1ndclIfCdnTFI=
 github.com/google/gofuzz v1.0.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/M65Eg=

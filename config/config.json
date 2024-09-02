@@ -11,7 +11,7 @@
 
     "Port": 8080,
 
-    "InstIDs": ["BTC-USDT-SWAP", "ETH-USDT-SWAP"],
+    "DeliveryInstIDs": ["ETHUSD_PERP"],
     "KeepPricesMs": 100000,
     "MinAccuracy": 0.000001
 }

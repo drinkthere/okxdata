@@ -19,9 +19,9 @@ type Config struct {
 
 	Port int
 
-	InstIDs      []string
-	KeepPricesMs int64
-	MinAccuracy  float64 // 价格最小精度
+	DeliveryInstIDs []string
+	KeepPricesMs    int64
+	MinAccuracy     float64 // 价格最小精度
 }
 
 func LoadConfig(filename string) *Config {

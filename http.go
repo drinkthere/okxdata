@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"okxdata/config"
-	"okxdata/container"
 	"okxdata/utils/logger"
 	"strconv"
 	"strings"
@@ -27,10 +26,23 @@ func startHTTPServer(cfg *config.Config) {
 func getInstPriceListHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		exchange := r.URL.Query().Get("exchange")
+		// 兼容老服务的请求
 		if exchange == "" {
-			exchange = "OKX"
+			exchange = "Okx"
 		}
-		exchange = strings.ToUpper(exchange)
+		fmtExchange := config.Exchange(exchange)
+
+		instType := r.URL.Query().Get("instType")
+		instType = strings.ToUpper(instType)
+		// 兼容老服务的请求
+		if instType == "" {
+			if fmtExchange == config.BinanceExchange {
+				instType = "FUTURES"
+			} else if fmtExchange == config.OkxExchange {
+				instType = "SWAP"
+			}
+		}
+		fmtInstType := config.InstrumentType(instType)
 
 		instID := r.URL.Query().Get("instID")
 		instID = strings.ToUpper(instID)
@@ -42,14 +54,9 @@ func getInstPriceListHandler() http.HandlerFunc {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		logger.Info("exchange=%s, instID=%s, timePeriodMs=%d", exchange, instID, timePeriodMs)
+		logger.Info("exchange=%s, instType=%s, instID=%s, timePeriodMs=%d", fmtExchange, fmtInstType, instID, timePeriodMs)
 
-		var priceList *[]container.PriceItem
-		if exchange == "OKX" {
-			priceList = globalContext.OkxPriceComposite.GetPriceList(instID)
-		} else {
-			priceList = globalContext.BinancePriceComposite.GetPriceList(instID)
-		}
+		priceList := globalContext.PriceComposite.GetPriceList(fmtExchange, fmtInstType, instID)
 
 		if priceList == nil {
 			w.WriteHeader(http.StatusNotFound)

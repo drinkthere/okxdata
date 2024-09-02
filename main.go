@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	binanceDelivery "github.com/dictxwang/go-binance/delivery"
 	binanceFutures "github.com/dictxwang/go-binance/futures"
 	"github.com/drinkthere/okx/events/public"
-	"okxdata/client"
 	"okxdata/config"
 	"okxdata/context"
 	"okxdata/message"
@@ -14,7 +14,6 @@ import (
 )
 
 var globalConfig config.Config
-var globalOkxClient client.OkxClient
 var globalContext context.GlobalContext
 
 func startWebSocket() {
@@ -27,7 +26,9 @@ func startWebSocket() {
 
 	// 监听binance行情信息并收集整理
 	binanceFuturesTickerChan := make(chan *binanceFutures.WsBookTickerEvent)
-	message.StartBinanceMarketWs(&globalConfig, &globalContext, binanceFuturesTickerChan)
+	binanceDeliveryTickerChan := make(chan *binanceDelivery.WsBookTickerEvent)
+	message.StartBinanceMarketWs(&globalConfig, &globalContext, binanceFuturesTickerChan, binanceDeliveryTickerChan)
+	message.StartGatherBinanceDeliveryBookTicker(binanceDeliveryTickerChan, &globalConfig, &globalContext)
 	message.StartGatherBinanceFuturesBookTicker(binanceFuturesTickerChan, &globalConfig, &globalContext)
 }
 
@@ -44,11 +45,8 @@ func main() {
 	// 设置日志级别, 并初始化日志
 	logger.InitLogger(globalConfig.LogPath, globalConfig.LogLevel)
 
-	// 初始化okx客户端
-	globalOkxClient.Init(&globalConfig)
-
 	// 解析config，加载杠杆和合约交易对，初始化context，账户初始化设置，拉取仓位、余额等
-	globalContext.Init(&globalConfig, &globalOkxClient)
+	globalContext.Init(&globalConfig)
 
 	// 开始监听ws消息
 	startWebSocket()

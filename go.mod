@@ -3,7 +3,7 @@ module okxdata
 go 1.22.0
 
 require (
-	github.com/dictxwang/go-binance v0.1.2
+	github.com/dictxwang/go-binance v0.1.20
 	github.com/drinkthere/okx v1.0.20
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	go.uber.org/zap v1.27.0

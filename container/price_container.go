@@ -14,36 +14,83 @@ type PriceItem struct {
 	UpdateTime time.Time
 }
 
-type PriceComposite struct {
+type PriceListMap struct {
 	instIDPriceListMap map[string][]PriceItem
 	rwLock             *sync.RWMutex
 }
 
-func (c *PriceComposite) InitOkx(globalConfig *config.Config) {
-	c.instIDPriceListMap = map[string][]PriceItem{}
-	for _, instID := range globalConfig.InstIDs {
-		// 初始化，无需加锁
-		c.instIDPriceListMap[instID] = []PriceItem{}
-
+func newPriceListMap() *PriceListMap {
+	return &PriceListMap{
+		instIDPriceListMap: map[string][]PriceItem{},
+		rwLock:             new(sync.RWMutex),
 	}
-	c.rwLock = new(sync.RWMutex)
 }
 
-func (c *PriceComposite) InitBinance(globalConfig *config.Config) {
-	c.instIDPriceListMap = map[string][]PriceItem{}
-	for _, instID := range globalConfig.InstIDs {
-		// 初始化，无需加锁
-		binanceInstID := utils.ConvertToBinanceInstID(instID)
-		c.instIDPriceListMap[binanceInstID] = []PriceItem{}
-
-	}
-	c.rwLock = new(sync.RWMutex)
+type PriceComposite struct {
+	BinanceDeliveryPriceMap *PriceListMap
+	BinanceFuturesPriceMap  *PriceListMap
+	BinanceSpotPriceMap     *PriceListMap
+	OkxSwapPriceMap         *PriceListMap
+	OkxSpotPriceMap         *PriceListMap
 }
 
-func (c *PriceComposite) GetPriceList(instID string) *[]PriceItem {
-	c.rwLock.RLock()
-	wrapper, has := c.instIDPriceListMap[instID]
-	c.rwLock.RUnlock()
+func NewPriceComposite(deliverInstIDs []string) *PriceComposite {
+	composite := &PriceComposite{
+		BinanceDeliveryPriceMap: newPriceListMap(),
+		BinanceFuturesPriceMap:  newPriceListMap(),
+		BinanceSpotPriceMap:     newPriceListMap(),
+		OkxSwapPriceMap:         newPriceListMap(),
+		OkxSpotPriceMap:         newPriceListMap(),
+	}
+
+	for _, instID := range deliverInstIDs {
+		// 初始化，无需加锁
+		composite.BinanceDeliveryPriceMap.instIDPriceListMap[instID] = []PriceItem{}
+
+		binanceFuturesID := utils.ConvertBinanceDeliveryInstIDToFuturesInstID(instID)
+		composite.BinanceFuturesPriceMap.instIDPriceListMap[binanceFuturesID] = []PriceItem{}
+
+		binanceSpotID := utils.ConvertBinanceDeliveryInstIDToSpotInstID(instID)
+		composite.BinanceSpotPriceMap.instIDPriceListMap[binanceSpotID] = []PriceItem{}
+
+		okxSwapID := utils.ConvertBinanceDeliveryInstIDToOkxSwapInstID(instID)
+		composite.OkxSwapPriceMap.instIDPriceListMap[okxSwapID] = []PriceItem{}
+
+		okxSpotID := utils.ConvertBinanceDeliveryInstIDToOkxSpotInstID(instID)
+		composite.OkxSpotPriceMap.instIDPriceListMap[okxSpotID] = []PriceItem{}
+	}
+
+	return composite
+}
+
+func (c *PriceComposite) getPriceListMap(exchange config.Exchange, instType config.InstrumentType) *PriceListMap {
+	var p *PriceListMap
+	if exchange == config.BinanceExchange {
+		if instType == config.FuturesInstrument {
+			p = c.BinanceFuturesPriceMap
+		} else if instType == config.SpotInstrument {
+			p = c.BinanceSpotPriceMap
+		} else if instType == config.DeliveryInstrument {
+			p = c.BinanceDeliveryPriceMap
+		}
+	} else if exchange == config.OkxExchange {
+		if instType == config.SwapInstrument {
+			p = c.OkxSwapPriceMap
+		} else if instType == config.SpotInstrument {
+			p = c.OkxSpotPriceMap
+		}
+	}
+	return p
+}
+func (c *PriceComposite) GetPriceList(exchange config.Exchange, instType config.InstrumentType, instID string) *[]PriceItem {
+	p := c.getPriceListMap(exchange, instType)
+	if p == nil {
+		return nil
+	}
+
+	p.rwLock.RLock()
+	defer p.rwLock.RUnlock()
+	wrapper, has := p.instIDPriceListMap[instID]
 
 	if has {
 		return &wrapper
@@ -53,10 +100,16 @@ func (c *PriceComposite) GetPriceList(instID string) *[]PriceItem {
 }
 
 func (c *PriceComposite) UpdatePriceList(tickerMsg TickerMessage, globalConfig *config.Config) bool {
+	p := c.getPriceListMap(tickerMsg.Exchange, tickerMsg.InstType)
+	logger.Info("priceListMap is %+v", p)
+	if p == nil {
+		return false
+	}
+
 	instID := tickerMsg.InstID
-	c.rwLock.RLock()
-	priceList, has := c.instIDPriceListMap[instID]
-	c.rwLock.RUnlock()
+	p.rwLock.Lock()
+	defer p.rwLock.Unlock()
+	priceList, has := p.instIDPriceListMap[instID]
 
 	if !has {
 		logger.Error("[Price] Update Price List Failed, instID=%s does not exist")
@@ -85,9 +138,7 @@ func (c *PriceComposite) UpdatePriceList(tickerMsg TickerMessage, globalConfig *
 			priceList = priceList[index:]
 		}
 
-		c.rwLock.Lock()
-		c.instIDPriceListMap[instID] = priceList
-		c.rwLock.Unlock()
+		p.instIDPriceListMap[instID] = priceList
 	}
 	return true
 }
