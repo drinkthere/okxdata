@@ -116,7 +116,6 @@ func (ws *innerBinanceDeliveryWebSocket) subscribeBookTickers(ip string, colo bo
 
 			var stopChan chan struct{}
 			var err error
-			logger.Info("[BDTickerWebSocket] Binance Delivery InstIDs is %+v", ws.instIDs)
 			if ip == "" {
 				_, stopChan, err = binanceDelivery.WsCombinedBookTickerServe(ws.instIDs, ws.handleTickerEvent, ws.handleError)
 			} else {

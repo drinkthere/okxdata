@@ -101,7 +101,6 @@ func (c *PriceComposite) GetPriceList(exchange config.Exchange, instType config.
 
 func (c *PriceComposite) UpdatePriceList(tickerMsg TickerMessage, globalConfig *config.Config) bool {
 	p := c.getPriceListMap(tickerMsg.Exchange, tickerMsg.InstType)
-	logger.Info("priceListMap is %+v", p)
 	if p == nil {
 		return false
 	}
