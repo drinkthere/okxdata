@@ -5,6 +5,7 @@ import (
 	binanceDelivery "github.com/dictxwang/go-binance/delivery"
 	binanceFutures "github.com/dictxwang/go-binance/futures"
 	"github.com/drinkthere/okx/events/public"
+	"github.com/hirokisan/bybit/v2"
 	"okxdata/config"
 	"okxdata/context"
 	"okxdata/message"
@@ -30,6 +31,10 @@ func startWebSocket() {
 	message.StartBinanceMarketWs(&globalConfig, &globalContext, binanceFuturesTickerChan, binanceDeliveryTickerChan)
 	message.StartGatherBinanceDeliveryBookTicker(binanceDeliveryTickerChan, &globalConfig, &globalContext)
 	message.StartGatherBinanceFuturesBookTicker(binanceFuturesTickerChan, &globalConfig, &globalContext)
+
+	bybitLinearTickerChan := make(chan *bybit.V5WebsocketPublicTickerResponse)
+	message.StartBybitMarketWs(&globalConfig, &globalContext, bybitLinearTickerChan)
+	message.StartGatherBybitLinearTicker(bybitLinearTickerChan, &globalConfig, &globalContext)
 }
 
 func main() {

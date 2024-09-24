@@ -40,6 +40,8 @@ func getInstPriceListHandler() http.HandlerFunc {
 				instType = "FUTURES"
 			} else if fmtExchange == config.OkxExchange {
 				instType = "SWAP"
+			} else if fmtExchange == config.BybitExchange {
+				instType = "LINEAR"
 			}
 		}
 		fmtInstType := config.InstrumentType(instType)

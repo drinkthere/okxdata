@@ -8,10 +8,12 @@ type (
 const (
 	BinanceExchange = Exchange("Binance")
 	OkxExchange     = Exchange("Okx")
+	BybitExchange   = Exchange("Bybit")
 
 	UnknownInstrument  = InstrumentType("UNKNOWN")
 	SpotInstrument     = InstrumentType("SPOT")
 	FuturesInstrument  = InstrumentType("FUTURES")
 	DeliveryInstrument = InstrumentType("DELIVERY")
 	SwapInstrument     = InstrumentType("SWAP")
+	LinearInstrument   = InstrumentType("LINEAR")
 )

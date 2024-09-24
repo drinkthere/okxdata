@@ -32,6 +32,7 @@ type PriceComposite struct {
 	BinanceSpotPriceMap     *PriceListMap
 	OkxSwapPriceMap         *PriceListMap
 	OkxSpotPriceMap         *PriceListMap
+	bybitLinearPriceMap     *PriceListMap
 }
 
 func NewPriceComposite(deliverInstIDs []string) *PriceComposite {
@@ -41,6 +42,7 @@ func NewPriceComposite(deliverInstIDs []string) *PriceComposite {
 		BinanceSpotPriceMap:     newPriceListMap(),
 		OkxSwapPriceMap:         newPriceListMap(),
 		OkxSpotPriceMap:         newPriceListMap(),
+		bybitLinearPriceMap:     newPriceListMap(),
 	}
 
 	for _, instID := range deliverInstIDs {
@@ -58,6 +60,9 @@ func NewPriceComposite(deliverInstIDs []string) *PriceComposite {
 
 		okxSpotID := utils.ConvertBinanceDeliveryInstIDToOkxSpotInstID(instID)
 		composite.OkxSpotPriceMap.instIDPriceListMap[okxSpotID] = []PriceItem{}
+
+		bybitLinearID := utils.ConvertBinanceDeliveryInstIDToBybitLinearInstID(instID)
+		composite.bybitLinearPriceMap.instIDPriceListMap[bybitLinearID] = []PriceItem{}
 	}
 
 	return composite
@@ -78,6 +83,10 @@ func (c *PriceComposite) getPriceListMap(exchange config.Exchange, instType conf
 			p = c.OkxSwapPriceMap
 		} else if instType == config.SpotInstrument {
 			p = c.OkxSpotPriceMap
+		}
+	} else if exchange == config.BybitExchange {
+		if instType == config.LinearInstrument {
+			p = c.bybitLinearPriceMap
 		}
 	}
 	return p

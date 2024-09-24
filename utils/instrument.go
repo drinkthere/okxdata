@@ -44,6 +44,15 @@ func ConvertBinanceDeliveryInstIDToOkxSpotInstID(binanceDeliveryInstID string) s
 	return strings.Replace(baseQuote, "USD", "-USDT", -1)
 }
 
+func ConvertBinanceDeliveryInstIDToBybitLinearInstID(binanceDeliveryInstID string) string {
+	// BTCUSD_PERP => BTCUSDT
+	// BTCUSD_240927 => BTCUSDT
+	parts := strings.Split(binanceDeliveryInstID, "_")
+	baseQuote := parts[0] // 获取前半部分，例如 "BTCUSD"
+
+	return strings.Replace(baseQuote, "USD", "USDT", -1)
+}
+
 func RemoveDuplicateInstIDs(ids []string) []string {
 	uniqueIDs := make(map[string]bool)
 	var result []string

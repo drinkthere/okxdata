@@ -9,7 +9,7 @@
     "BinanceAPIKey": "",
     "BinanceSecretKey": "",
 
-    "Port": 8080,
+    "Port": 8887,
 
     "DeliveryInstIDs": ["ETHUSD_PERP"],
     "KeepPricesMs": 100000,
