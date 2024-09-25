@@ -19,9 +19,11 @@ type Config struct {
 
 	Port int
 
-	DeliveryInstIDs []string
-	KeepPricesMs    int64
-	MinAccuracy     float64 // 价格最小精度
+	BinanceDeliveryInstIDs []string
+	OkxSwapInstIDs         []string
+	BybitLinearInstIDs     []string
+	KeepPricesMs           int64
+	MinAccuracy            float64 // 价格最小精度
 }
 
 func LoadConfig(filename string) *Config {

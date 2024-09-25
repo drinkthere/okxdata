@@ -35,7 +35,7 @@ type PriceComposite struct {
 	bybitLinearPriceMap     *PriceListMap
 }
 
-func NewPriceComposite(deliverInstIDs []string) *PriceComposite {
+func NewPriceComposite(globalConfig *config.Config) *PriceComposite {
 	composite := &PriceComposite{
 		BinanceDeliveryPriceMap: newPriceListMap(),
 		BinanceFuturesPriceMap:  newPriceListMap(),
@@ -45,7 +45,7 @@ func NewPriceComposite(deliverInstIDs []string) *PriceComposite {
 		bybitLinearPriceMap:     newPriceListMap(),
 	}
 
-	for _, instID := range deliverInstIDs {
+	for _, instID := range globalConfig.BinanceDeliveryInstIDs {
 		// 初始化，无需加锁
 		composite.BinanceDeliveryPriceMap.instIDPriceListMap[instID] = []PriceItem{}
 
@@ -54,17 +54,18 @@ func NewPriceComposite(deliverInstIDs []string) *PriceComposite {
 
 		binanceSpotID := utils.ConvertBinanceDeliveryInstIDToSpotInstID(instID)
 		composite.BinanceSpotPriceMap.instIDPriceListMap[binanceSpotID] = []PriceItem{}
-
-		okxSwapID := utils.ConvertBinanceDeliveryInstIDToOkxSwapInstID(instID)
-		composite.OkxSwapPriceMap.instIDPriceListMap[okxSwapID] = []PriceItem{}
-
-		okxSpotID := utils.ConvertBinanceDeliveryInstIDToOkxSpotInstID(instID)
-		composite.OkxSpotPriceMap.instIDPriceListMap[okxSpotID] = []PriceItem{}
-
-		bybitLinearID := utils.ConvertBinanceDeliveryInstIDToBybitLinearInstID(instID)
-		composite.bybitLinearPriceMap.instIDPriceListMap[bybitLinearID] = []PriceItem{}
 	}
 
+	for _, instID := range globalConfig.OkxSwapInstIDs {
+		composite.OkxSwapPriceMap.instIDPriceListMap[instID] = []PriceItem{}
+
+		okxSpotID := utils.ConvertOkxSwapInstIDToOkxSpotInstID(instID)
+		composite.OkxSpotPriceMap.instIDPriceListMap[okxSpotID] = []PriceItem{}
+	}
+
+	for _, instID := range globalConfig.BybitLinearInstIDs {
+		composite.bybitLinearPriceMap.instIDPriceListMap[instID] = []PriceItem{}
+	}
 	return composite
 }
 

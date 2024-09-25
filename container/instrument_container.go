@@ -1,6 +1,7 @@
 package container
 
 import (
+	"okxdata/config"
 	"okxdata/utils"
 )
 
@@ -13,30 +14,28 @@ type InstrumentComposite struct {
 	BybitLinearInstIDs     []string // Bybit永续交易对，支持多个交易对，如：BTCUSDT, ETHUSDT
 }
 
-func NewInstrumentComposite(deliveryInstIDs []string) *InstrumentComposite {
+func NewInstrumentComposite(globalConfig *config.Config) *InstrumentComposite {
 	composite := &InstrumentComposite{
-		BinanceDeliveryInstIDs: deliveryInstIDs,
+		BinanceDeliveryInstIDs: globalConfig.BinanceDeliveryInstIDs,
 		BinanceFuturesInstIDs:  []string{},
 		BinanceSpotInstIDs:     []string{},
-		OkxSwapInstIDs:         []string{},
+		OkxSwapInstIDs:         globalConfig.OkxSwapInstIDs,
 		OkxSpotInstIDs:         []string{},
-		BybitLinearInstIDs:     []string{},
+		BybitLinearInstIDs:     globalConfig.BybitLinearInstIDs,
 	}
 
-	for _, instID := range deliveryInstIDs {
+	// 通过delivery id 初始化 futures和spot id
+	for _, instID := range globalConfig.BinanceDeliveryInstIDs {
 		composite.BinanceFuturesInstIDs = append(composite.BinanceFuturesInstIDs, utils.ConvertBinanceDeliveryInstIDToFuturesInstID(instID))
 		composite.BinanceSpotInstIDs = append(composite.BinanceSpotInstIDs, utils.ConvertBinanceDeliveryInstIDToSpotInstID(instID))
-		composite.OkxSwapInstIDs = append(composite.OkxSwapInstIDs, utils.ConvertBinanceDeliveryInstIDToOkxSwapInstID(instID))
-		composite.OkxSpotInstIDs = append(composite.OkxSpotInstIDs, utils.ConvertBinanceDeliveryInstIDToOkxSpotInstID(instID))
-		composite.BybitLinearInstIDs = append(composite.BybitLinearInstIDs, utils.ConvertBinanceDeliveryInstIDToBybitLinearInstID(instID))
 	}
-
 	// 因为可能存在BTCUSD_PERPETUAL和BTCUSD_240927 映射到相同的instID的情况，这里进行去重
 	composite.BinanceFuturesInstIDs = utils.RemoveDuplicateInstIDs(composite.BinanceFuturesInstIDs)
 	composite.BinanceSpotInstIDs = utils.RemoveDuplicateInstIDs(composite.BinanceSpotInstIDs)
-	composite.OkxSwapInstIDs = utils.RemoveDuplicateInstIDs(composite.OkxSwapInstIDs)
-	composite.OkxSpotInstIDs = utils.RemoveDuplicateInstIDs(composite.OkxSpotInstIDs)
-	composite.BybitLinearInstIDs = utils.RemoveDuplicateInstIDs(composite.BybitLinearInstIDs)
 
+	// 通过swap id 初始化 spot id
+	for _, instID := range globalConfig.OkxSwapInstIDs {
+		composite.OkxSpotInstIDs = append(composite.OkxSpotInstIDs, utils.ConvertOkxSwapInstIDToOkxSpotInstID(instID))
+	}
 	return composite
 }

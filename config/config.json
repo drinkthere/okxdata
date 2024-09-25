@@ -11,7 +11,9 @@
 
     "Port": 8887,
 
-    "DeliveryInstIDs": ["ETHUSD_PERP"],
+    "BinanceDeliveryInstIDs": ["ETHUSD_PERP"],
+    "OkxSwapInstIDs": ["BTC-USDT-SWAP", "ETH-USDT-SWAP"],
+    "BybitLinearInstIDs": ["BTCUSDT", "ETHUSDT"],
     "KeepPricesMs": 100000,
     "MinAccuracy": 0.000001
 }

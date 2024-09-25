@@ -23,11 +23,11 @@ func (context *GlobalContext) Init(globalConfig *config.Config) {
 }
 
 func (context *GlobalContext) initInstrumentComposite(globalConfig *config.Config) {
-	instrumentComposite := container.NewInstrumentComposite(globalConfig.DeliveryInstIDs)
+	instrumentComposite := container.NewInstrumentComposite(globalConfig)
 	context.InstrumentComposite = instrumentComposite
 }
 
 func (context *GlobalContext) initPriceComposite(globalConfig *config.Config) {
-	priceComposite := container.NewPriceComposite(globalConfig.DeliveryInstIDs)
+	priceComposite := container.NewPriceComposite(globalConfig)
 	context.PriceComposite = priceComposite
 }
