@@ -1,7 +1,7 @@
 vendor/
 .idea
 config/*.json
-bin/
+bin/okxdata
 logs/
 okx
 *.DS_Store 

@@ -9,7 +9,7 @@
     "BinanceAPIKey": "",
     "BinanceSecretKey": "",
 
-    "Port": 8887,
+    "Port": 8888,
 
     "BinanceDeliveryInstIDs": ["ETHUSD_PERP"],
     "OkxSwapInstIDs": ["BTC-USDT-SWAP", "ETH-USDT-SWAP"],
