@@ -1,6 +1,6 @@
 {
     "LogLevel": "INFO",
-    "LogPath": "./logs/okxdata.log",
+    "LogPath": "/data/dc/okxdata/okxdata.log",
     "OkxAPIKey": "",
     "OkxSecretKey": "",
     "OkxPassword": "",
