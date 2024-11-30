@@ -48,12 +48,11 @@ func NewPriceComposite(globalConfig *config.Config) *PriceComposite {
 	for _, instID := range globalConfig.BinanceDeliveryInstIDs {
 		// 初始化，无需加锁
 		composite.BinanceDeliveryPriceMap.instIDPriceListMap[instID] = []PriceItem{}
+	}
 
-		binanceFuturesID := utils.ConvertBinanceDeliveryInstIDToFuturesInstID(instID)
-		composite.BinanceFuturesPriceMap.instIDPriceListMap[binanceFuturesID] = []PriceItem{}
-
-		binanceSpotID := utils.ConvertBinanceDeliveryInstIDToSpotInstID(instID)
-		composite.BinanceSpotPriceMap.instIDPriceListMap[binanceSpotID] = []PriceItem{}
+	for _, instID := range globalConfig.BinanceFuturesInstIDs {
+		composite.BinanceFuturesPriceMap.instIDPriceListMap[instID] = []PriceItem{}
+		composite.BinanceSpotPriceMap.instIDPriceListMap[instID] = []PriceItem{}
 	}
 
 	for _, instID := range globalConfig.OkxSwapInstIDs {
