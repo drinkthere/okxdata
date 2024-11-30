@@ -20,6 +20,7 @@ type Config struct {
 	Port int
 
 	BinanceDeliveryInstIDs []string
+	BinanceFuturesInstIDs  []string
 	OkxSwapInstIDs         []string
 	BybitLinearInstIDs     []string
 	KeepPricesMs           int64
