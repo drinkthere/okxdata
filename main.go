@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	binanceSpot "github.com/dictxwang/go-binance"
 	binanceDelivery "github.com/dictxwang/go-binance/delivery"
 	binanceFutures "github.com/dictxwang/go-binance/futures"
 	"github.com/drinkthere/okx/events/public"
@@ -18,23 +19,35 @@ var globalConfig config.Config
 var globalContext context.GlobalContext
 
 func startWebSocket() {
-	// 监听okx行情信息
-	okxFuturesTickerChan := make(chan *public.Tickers)
-	message.StartOkxMarketWs(&globalConfig, &globalContext, okxFuturesTickerChan)
+	if len(globalContext.InstrumentComposite.OkxSwapInstIDs) > 0 {
+		// 监听okx行情信息
+		okxFuturesTickerChan := make(chan *public.Tickers)
+		okxSpotTickerChan := make(chan *public.Tickers)
+		message.StartOkxMarketWs(&globalConfig, &globalContext, okxFuturesTickerChan, okxSpotTickerChan)
+		// 开启Okx行情数据收集整理
+		message.StartGatherOkxFuturesTicker(okxFuturesTickerChan, &globalConfig, &globalContext)
+		message.StartGatherOkxSpotTicker(okxSpotTickerChan, &globalConfig, &globalContext)
+	}
 
-	// 开启Okx行情数据收集整理
-	message.StartGatherOkxFuturesTicker(okxFuturesTickerChan, &globalConfig, &globalContext)
+	if len(globalContext.InstrumentComposite.BinanceFuturesInstIDs) > 0 {
+		// 监听binance行情信息并收集整理
+		binanceFuturesTickerChan := make(chan *binanceFutures.WsBookTickerEvent)
+		binanceDeliveryTickerChan := make(chan *binanceDelivery.WsBookTickerEvent)
+		binanceSpotTickerChan := make(chan *binanceSpot.WsBookTickerEvent)
+		message.StartBinanceMarketWs(&globalConfig, &globalContext, binanceFuturesTickerChan,
+			binanceDeliveryTickerChan, binanceSpotTickerChan)
+		message.StartGatherBinanceDeliveryBookTicker(binanceDeliveryTickerChan, &globalConfig, &globalContext)
+		message.StartGatherBinanceFuturesBookTicker(binanceFuturesTickerChan, &globalConfig, &globalContext)
+		message.StartGatherBinanceSpotBookTicker(binanceSpotTickerChan, &globalConfig, &globalContext)
+	}
 
-	// 监听binance行情信息并收集整理
-	binanceFuturesTickerChan := make(chan *binanceFutures.WsBookTickerEvent)
-	binanceDeliveryTickerChan := make(chan *binanceDelivery.WsBookTickerEvent)
-	message.StartBinanceMarketWs(&globalConfig, &globalContext, binanceFuturesTickerChan, binanceDeliveryTickerChan)
-	message.StartGatherBinanceDeliveryBookTicker(binanceDeliveryTickerChan, &globalConfig, &globalContext)
-	message.StartGatherBinanceFuturesBookTicker(binanceFuturesTickerChan, &globalConfig, &globalContext)
-
-	bybitLinearTickerChan := make(chan *bybit.V5WebsocketPublicTickerResponse)
-	message.StartBybitMarketWs(&globalConfig, &globalContext, bybitLinearTickerChan)
-	message.StartGatherBybitLinearTicker(bybitLinearTickerChan, &globalConfig, &globalContext)
+	if len(globalContext.InstrumentComposite.BybitLinearInstIDs) > 0 {
+		bybitLinearTickerChan := make(chan *bybit.V5WebsocketPublicTickerResponse)
+		bybitSpotTickerChan := make(chan *bybit.V5WebsocketPublicTickerResponse)
+		message.StartBybitMarketWs(&globalConfig, &globalContext, bybitLinearTickerChan, bybitSpotTickerChan)
+		message.StartGatherBybitLinearTicker(bybitLinearTickerChan, &globalConfig, &globalContext)
+		message.StartGatherBybitSpotTicker(bybitSpotTickerChan, &globalConfig, &globalContext)
+	}
 }
 
 func main() {

@@ -47,3 +47,40 @@ func convertBybitLinearTickerEventToTickerMessage(ticker *bybit.V5WebsocketPubli
 		BidSz:    bidSz,
 	}
 }
+
+func StartGatherBybitSpotTicker(spotTickerChan chan *bybit.V5WebsocketPublicTickerResponse, globalConfig *config.Config, globalContext *context.GlobalContext) {
+	go func() {
+		defer func() {
+			logger.Error("[GatherBybitSTicker] Bybit Spot Ticker Gather Exited.")
+		}()
+		for t := range spotTickerChan {
+			tickerInfo := t.Data.Spot
+			if !utils.InArray(string(tickerInfo.Symbol), globalContext.InstrumentComposite.BybitSpotInstIDs) {
+				continue
+			}
+			tickerMsg := convertBybitSpotTickerEventToTickerMessage(globalConfig, tickerInfo)
+			globalContext.PriceComposite.UpdatePriceList(tickerMsg, globalConfig)
+
+		}
+	}()
+
+	logger.Info("[GatherBybitSTicker] Start Gather Bybit Spot Tickers")
+}
+
+func convertBybitSpotTickerEventToTickerMessage(globalConfig *config.Config, ticker *bybit.V5WebsocketPublicTickerSpotResult) container.TickerMessage {
+	instID := string(ticker.Symbol)
+	lastPrice, _ := strconv.ParseFloat(ticker.LastPrice, 64)
+	bidPx := lastPrice
+	askPx := lastPrice
+	sz := 0.001
+	// 用来初始化的金额，不需要太准确
+	return container.TickerMessage{
+		Exchange: config.BybitExchange,
+		InstType: config.SpotInstrument,
+		InstID:   instID,
+		AskPx:    askPx,
+		AskSz:    sz,
+		BidPx:    bidPx,
+		BidSz:    sz,
+	}
+}

@@ -25,9 +25,17 @@ func ConvertBinanceDeliveryInstIDToSpotInstID(binanceDeliveryInstID string) stri
 	return strings.Replace(baseQuote, "USD", "USDT", -1)
 }
 
+func ConvertBinanceFuturesInstIDToBinanceSpotInstID(binanceFuturesInstID string) string {
+	return binanceFuturesInstID
+}
+
 func ConvertOkxSwapInstIDToOkxSpotInstID(okxSwapInstID string) string {
-	// BTC-USDT-SWAP => BTC-USDT
 	return strings.Replace(okxSwapInstID, "-SWAP", "", -1)
+}
+
+func ConvertBybitLinearInstIDToBybitSpotInstID(bybitLinearInstID string) string {
+	// BTC-USDT-SWAP => BTC-USDT
+	return bybitLinearInstID
 }
 
 func RemoveDuplicateInstIDs(ids []string) []string {

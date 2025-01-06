@@ -42,6 +42,13 @@ func InArray(target string, strArray []string) bool {
 	return false
 }
 
+func MinDecimal(decimalPlaces int) float64 {
+	if decimalPlaces < 0 {
+		return 0 // 负数位数返回 0
+	}
+	return 1 / math.Pow(10, float64(decimalPlaces))
+}
+
 func GetTimestampInMS() int64 {
 	return time.Now().UnixNano() / 1e6
 }

@@ -1,6 +1,6 @@
 {
     "LogLevel": "INFO",
-    "LogPath": "/data/dc/okxdata/okxdata.log",
+    "LogPath": "./logs/okxdata.log",
     "OkxAPIKey": "",
     "OkxSecretKey": "",
     "OkxPassword": "",
@@ -152,7 +152,10 @@
         "INJUSDT"
     ],
     "BinanceDeliveryInstIDs": [],
-    "BybitLinearInstIDs": [],
+    "BybitLinearInstIDs": [
+        "1INCHUSDT",
+        "AAVEUSDT"
+    ],
     "OkxSwapInstIDs": [
         "BTC-USDT-SWAP",
         "ETH-USDT-SWAP",

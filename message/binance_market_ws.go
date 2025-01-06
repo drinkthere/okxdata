@@ -1,6 +1,7 @@
 package message
 
 import (
+	binanceSpot "github.com/dictxwang/go-binance"
 	binanceDelivery "github.com/dictxwang/go-binance/delivery"
 	binanceFutures "github.com/dictxwang/go-binance/futures"
 	"math/rand"
@@ -10,24 +11,31 @@ import (
 	"time"
 )
 
-func StartBinanceMarketWs(cfg *config.Config, globalContext *context.GlobalContext,
-	binanceFuturesTickerChan chan *binanceFutures.WsBookTickerEvent, binanceDeliveryTickerChan chan *binanceDelivery.WsBookTickerEvent) {
+func StartBinanceMarketWs(
+	cfg *config.Config,
+	globalContext *context.GlobalContext,
+	binanceFuturesTickerChan chan *binanceFutures.WsBookTickerEvent,
+	binanceDeliveryTickerChan chan *binanceDelivery.WsBookTickerEvent,
+	binanceSpotTickerChan chan *binanceSpot.WsBookTickerEvent) {
 
-	binanceWs := newBinanceMarketWebSocket(binanceDeliveryTickerChan, binanceFuturesTickerChan)
+	binanceWs := newBinanceMarketWebSocket(binanceDeliveryTickerChan, binanceFuturesTickerChan, binanceSpotTickerChan)
 	binanceWs.StartBinanceMarketWs(globalContext)
 }
 
 type BinanceMarketWebSocket struct {
 	deliveryTickerChan chan *binanceDelivery.WsBookTickerEvent
 	futuresTickerChan  chan *binanceFutures.WsBookTickerEvent
+	spotTickerChan     chan *binanceSpot.WsBookTickerEvent
 }
 
 func newBinanceMarketWebSocket(
 	binanceDeliveryTickerChan chan *binanceDelivery.WsBookTickerEvent,
-	binanceFuturesTickerChan chan *binanceFutures.WsBookTickerEvent) *BinanceMarketWebSocket {
+	binanceFuturesTickerChan chan *binanceFutures.WsBookTickerEvent,
+	binanceSpotTickerChan chan *binanceSpot.WsBookTickerEvent) *BinanceMarketWebSocket {
 	return &BinanceMarketWebSocket{
 		deliveryTickerChan: binanceDeliveryTickerChan,
 		futuresTickerChan:  binanceFuturesTickerChan,
+		spotTickerChan:     binanceSpotTickerChan,
 	}
 }
 
@@ -72,6 +80,26 @@ func (ws *BinanceMarketWebSocket) StartBinanceMarketWs(globalContext *context.Gl
 		innerFutures.startBookTickers("")
 	}
 	logger.Info("[BFTickerWebSocket] Start Listen Binance Futures Tickers")
+
+	instIDs = globalContext.InstrumentComposite.BinanceSpotInstIDs
+	instIDsSize = len(instIDs)
+	for i := 0; i < instIDsSize; i += batchSize {
+		end := i + batchSize
+		if end > instIDsSize {
+			end = instIDsSize
+		}
+		batch := instIDs[i:end]
+
+		// 初始化合约行情监控
+		innerSpot := innerBinanceSpotWebSocket{
+			instIDs:    batch,
+			tickerChan: ws.spotTickerChan,
+			isStopped:  true,
+			randGen:    rand.New(rand.NewSource(2)),
+		}
+		innerSpot.startBookTickers("")
+	}
+	logger.Info("[BSTickerWebSocket] Start Listen Binance Futures Tickers")
 }
 
 type innerBinanceDeliveryWebSocket struct {
@@ -181,6 +209,60 @@ func (ws *innerBinanceFuturesWebSocket) startBookTickers(ip string) {
 				continue
 			}
 			logger.Info("[BFTickerWebSocket] Subscribe Binance Futures Book Tickers: %d", len(ws.instIDs))
+			// 重置channel和时间
+			ws.stopChan = stopChan
+			ws.isStopped = false
+		}
+	}()
+}
+
+type innerBinanceSpotWebSocket struct {
+	instIDs    []string
+	tickerChan chan *binanceSpot.WsBookTickerEvent
+	isStopped  bool
+	stopChan   chan struct{}
+	randGen    *rand.Rand
+}
+
+func (ws *innerBinanceSpotWebSocket) handleTickerEvent(event *binanceSpot.WsBookTickerEvent) {
+	if ws.randGen.Int31n(10000) < 2 {
+		logger.Info("[BSTickerWebSocket] Binance Spot Event: %+v", event)
+	}
+	ws.tickerChan <- event
+}
+
+func (ws *innerBinanceSpotWebSocket) handleError(err error) {
+	// 出错断开连接，再重连
+	logger.Error("[BSTickerWebSocket] Binance Spot Handle Error And Reconnect Ws: %s", err.Error())
+	ws.stopChan <- struct{}{}
+	ws.isStopped = true
+}
+
+func (ws *innerBinanceSpotWebSocket) startBookTickers(ip string) {
+
+	go func() {
+		defer func() {
+			logger.Warn("[BSTickerWebSocket] Binance Spot Ticker Listening Exited.")
+		}()
+		for {
+			if !ws.isStopped {
+				time.Sleep(time.Second * 1)
+				continue
+			}
+			var stopChan chan struct{}
+			var err error
+			if ip == "" {
+				_, stopChan, err = binanceSpot.WsCombinedBookTickerServe(ws.instIDs, ws.handleTickerEvent, ws.handleError)
+			} else {
+				_, stopChan, err = binanceSpot.WsCombinedBookTickerServeWithIP(ip, ws.instIDs, ws.handleTickerEvent, ws.handleError)
+			}
+
+			if err != nil {
+				logger.Error("[BSTickerWebSocket] Subscribe Binance Spot Book Tickers Error: %s", err.Error())
+				time.Sleep(time.Second * 1)
+				continue
+			}
+			logger.Info("[BSTickerWebSocket] Subscribe Binance Spot Book Tickers: %d", len(ws.instIDs))
 			// 重置channel和时间
 			ws.stopChan = stopChan
 			ws.isStopped = false
