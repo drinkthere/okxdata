@@ -22,6 +22,7 @@ type Config struct {
 	BinanceDeliveryInstIDs []string
 	BinanceFuturesInstIDs  []string
 	OkxSwapInstIDs         []string
+	OkxSpotInstIDs         []string
 	BybitLinearInstIDs     []string
 	KeepPricesMs           int64
 	MinAccuracy            float64 // 价格最小精度

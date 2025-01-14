@@ -33,10 +33,14 @@ func NewInstrumentComposite(globalConfig *config.Config) *InstrumentComposite {
 	}
 
 	// 通过swap id 初始化 spot id
-	if len(globalConfig.OkxSwapInstIDs) > 0 {
-		for _, instID := range globalConfig.OkxSwapInstIDs {
-			composite.OkxSpotInstIDs = append(composite.OkxSpotInstIDs, utils.ConvertOkxSwapInstIDToOkxSpotInstID(instID))
+	if len(globalConfig.OkxSpotInstIDs) == 0 {
+		if len(globalConfig.OkxSwapInstIDs) > 0 {
+			for _, instID := range globalConfig.OkxSwapInstIDs {
+				composite.OkxSpotInstIDs = append(composite.OkxSpotInstIDs, utils.ConvertOkxSwapInstIDToOkxSpotInstID(instID))
+			}
 		}
+	} else {
+		composite.OkxSpotInstIDs = globalConfig.OkxSpotInstIDs
 	}
 
 	if len(globalConfig.BybitLinearInstIDs) > 0 {
