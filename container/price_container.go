@@ -126,7 +126,7 @@ func (c *PriceComposite) UpdatePriceList(tickerMsg TickerMessage, globalConfig *
 	priceList, has := p.instIDPriceListMap[instID]
 
 	if !has {
-		logger.Error("[Price] Update Price List Failed, instID=%s does not exist")
+		logger.Error("[Price] Update Price List Failed, instID=%s does not exist", instID)
 		return false
 	} else {
 		if tickerMsg.BidPx < globalConfig.MinAccuracy || tickerMsg.AskPx < globalConfig.MinAccuracy {
