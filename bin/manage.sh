@@ -2,7 +2,7 @@
 
 start() {
     echo "Starting the process..."
-    nohup ./okxdata ../config/config.json > ./logs/nohup.log 2>&1 &
+    nohup taskset -c 0 ./okxdata ../config/config.json > /data/dc/okxdata/nohup.log 2>&1 &
     echo "Process started."
 }
 
