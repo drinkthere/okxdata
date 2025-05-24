@@ -1,6 +1,6 @@
 {
   "LogLevel": "INFO",
-  "LogPath": "/home/dc/code/cold_boot_data/data.log",
+  "LogPath": "/data/dc/cold_boot_data/data.log",
   "OkxAPIKey": "",
   "OkxSecretKey": "",
   "OkxPassword": "",
