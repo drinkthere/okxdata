@@ -154,7 +154,10 @@
         "INJUSDT",
         "TRUMPUSDT"
     ],
-    "BinanceDeliveryInstIDs": [],
+    "BinanceDeliveryInstIDs": [
+        "BTCUSD_PERP",
+        "ETHUSD_PERP"
+    ],
     "BybitLinearInstIDs": [],
     "OkxSwapInstIDs": [],
     "CryptoSwapInstIDs": [
