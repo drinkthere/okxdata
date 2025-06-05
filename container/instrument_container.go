@@ -13,6 +13,7 @@ type InstrumentComposite struct {
 	OkxSpotInstIDs         []string // Okx现货交易对，支持多个交易对，如：BTC-USDT, ETH-USDT
 	BybitLinearInstIDs     []string // Bybit永续交易对，支持多个交易对，如：BTCUSDT, ETHUSDT
 	BybitSpotInstIDs       []string // Bybit现货交易对，支持多个交易对，如：BTCUSDT, ETHUSDT
+	CryptoSwapInstIDs      []string // crypto.com永续交易对，支持多个交易对，如：BTCUSD-PERP， ETHUSD-PERP
 }
 
 func NewInstrumentComposite(globalConfig *config.Config) *InstrumentComposite {
@@ -24,6 +25,7 @@ func NewInstrumentComposite(globalConfig *config.Config) *InstrumentComposite {
 		OkxSpotInstIDs:         []string{},
 		BybitLinearInstIDs:     globalConfig.BybitLinearInstIDs,
 		BybitSpotInstIDs:       []string{},
+		CryptoSwapInstIDs:      globalConfig.CryptoSwapInstIDs,
 	}
 
 	if len(globalConfig.BinanceFuturesInstIDs) > 0 {

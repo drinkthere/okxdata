@@ -9,6 +9,7 @@ const (
 	BinanceExchange = Exchange("Binance")
 	OkxExchange     = Exchange("Okx")
 	BybitExchange   = Exchange("Bybit")
+	CryptoExchange  = Exchange("Crypto")
 
 	UnknownInstrument  = InstrumentType("UNKNOWN")
 	SpotInstrument     = InstrumentType("SPOT")

@@ -6,6 +6,8 @@
     "OkxPassword": "",
     "BinanceAPIKey": "",
     "BinanceSecretKey": "",
+    "CryptoAPIKey": "",
+    ""
     "Port": 8888,
     "BinanceFuturesInstIDs": [
         "BTCUSDT",
@@ -155,6 +157,10 @@
     "BinanceDeliveryInstIDs": [],
     "BybitLinearInstIDs": [],
     "OkxSwapInstIDs": [],
+    "CryptoSwapInstIDs": [
+        "BTCUSD-PERP",
+        "ETHUSD-PERP"
+    ],
     "KeepPricesMs": 100000,
     "MinAccuracy": 0.000001
 }

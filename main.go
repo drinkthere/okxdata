@@ -48,6 +48,13 @@ func startWebSocket() {
 		message.StartGatherBybitLinearTicker(bybitLinearTickerChan, &globalConfig, &globalContext)
 		message.StartGatherBybitSpotTicker(bybitSpotTickerChan, &globalConfig, &globalContext)
 	}
+
+	if len(globalContext.InstrumentComposite.CryptoSwapInstIDs) > 0 {
+		swapTickerChan := make(chan *public.Tickers)
+
+		message.StartCryptoMarketWs(&globalConfig, &globalContext, config.SwapInstrument, swapTickerChan)
+		message.StartGatherCryptoSwapTicker(&globalConfig, &globalContext, swapTickerChan)
+	}
 }
 
 func main() {

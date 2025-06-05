@@ -17,6 +17,9 @@ type Config struct {
 	OkxSecretKey string
 	OkxPassword  string
 
+	CryptoAPIKey    string
+	CryptoSecretKey string
+
 	Port int
 
 	BinanceDeliveryInstIDs []string
@@ -24,6 +27,7 @@ type Config struct {
 	OkxSwapInstIDs         []string
 	OkxSpotInstIDs         []string
 	BybitLinearInstIDs     []string
+	CryptoSwapInstIDs      []string
 	KeepPricesMs           int64
 	MinAccuracy            float64 // 价格最小精度
 }

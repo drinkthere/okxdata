@@ -34,6 +34,7 @@ type PriceComposite struct {
 	OkxSpotPriceMap         *PriceListMap
 	bybitLinearPriceMap     *PriceListMap
 	bybitSpotPriceMap       *PriceListMap
+	cryptoSwapPriceMap      *PriceListMap
 }
 
 func NewPriceComposite(globalConfig *config.Config) *PriceComposite {
@@ -45,6 +46,7 @@ func NewPriceComposite(globalConfig *config.Config) *PriceComposite {
 		OkxSpotPriceMap:         newPriceListMap(),
 		bybitLinearPriceMap:     newPriceListMap(),
 		bybitSpotPriceMap:       newPriceListMap(),
+		cryptoSwapPriceMap:      newPriceListMap(),
 	}
 
 	for _, instID := range globalConfig.BinanceDeliveryInstIDs {
@@ -68,6 +70,10 @@ func NewPriceComposite(globalConfig *config.Config) *PriceComposite {
 		composite.bybitLinearPriceMap.instIDPriceListMap[instID] = []PriceItem{}
 		bybitSpotInstID := utils.ConvertBybitLinearInstIDToBybitSpotInstID(instID)
 		composite.bybitSpotPriceMap.instIDPriceListMap[bybitSpotInstID] = []PriceItem{}
+	}
+
+	for _, instID := range globalConfig.CryptoSwapInstIDs {
+		composite.cryptoSwapPriceMap.instIDPriceListMap[instID] = []PriceItem{}
 	}
 	return composite
 }
@@ -93,6 +99,10 @@ func (c *PriceComposite) getPriceListMap(exchange config.Exchange, instType conf
 			p = c.bybitLinearPriceMap
 		} else if instType == config.SpotInstrument {
 			p = c.bybitSpotPriceMap
+		}
+	} else if exchange == config.CryptoExchange {
+		if instType == config.SwapInstrument {
+			p = c.cryptoSwapPriceMap
 		}
 	}
 	return p
