@@ -19,8 +19,8 @@ type Config struct {
 
 	CryptoAPIKey    string
 	CryptoSecretKey string
-
-	Port int
+	CryptoLocalIP   string
+	Port            int
 
 	BinanceDeliveryInstIDs []string
 	BinanceFuturesInstIDs  []string
