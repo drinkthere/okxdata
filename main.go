@@ -5,6 +5,7 @@ import (
 	binanceSpot "github.com/dictxwang/go-binance"
 	binanceDelivery "github.com/dictxwang/go-binance/delivery"
 	binanceFutures "github.com/dictxwang/go-binance/futures"
+	cryptoPublic "github.com/drinkthere/cryptodotcom/events/public"
 	"github.com/drinkthere/okx/events/public"
 	"github.com/hirokisan/bybit/v2"
 	"okxdata/config"
@@ -50,7 +51,7 @@ func startWebSocket() {
 	}
 
 	if len(globalContext.InstrumentComposite.CryptoSwapInstIDs) > 0 {
-		swapTickerChan := make(chan *public.Tickers)
+		swapTickerChan := make(chan *cryptoPublic.Tickers)
 
 		message.StartCryptoMarketWs(&globalConfig, &globalContext, config.SwapInstrument, swapTickerChan)
 		message.StartGatherCryptoSwapTicker(&globalConfig, &globalContext, swapTickerChan)
