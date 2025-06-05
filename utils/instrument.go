@@ -68,3 +68,13 @@ func ConvertToBinanceInstID(okxFuturesInstID string) string {
 	// BTC-USDT-SWAP => BTCUSDT
 	return strings.Replace(okxFuturesInstID, "-USDT-SWAP", "USDT", -1)
 }
+
+func GetCryptoInstTypeFromInstID(instID string) config.InstrumentType {
+	if strings.HasSuffix(instID, "USD-PERP") {
+		return config.SwapInstrument
+	}
+	if strings.HasSuffix(instID, "_USD") || strings.HasSuffix(instID, "_USDT") {
+		return config.SpotInstrument
+	}
+	return config.UnknownInstrument
+}
