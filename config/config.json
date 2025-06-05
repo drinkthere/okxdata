@@ -7,7 +7,7 @@
     "BinanceAPIKey": "",
     "BinanceSecretKey": "",
     "CryptoAPIKey": "",
-    ""
+    "CryptoSecretKey": "",
     "Port": 8888,
     "BinanceFuturesInstIDs": [
         "BTCUSDT",
